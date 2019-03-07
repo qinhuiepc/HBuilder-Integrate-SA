@@ -1,0 +1,34 @@
+
+@font-face {font-family: "iconfont";
+  url('../fonts/iconfont.ttf') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+}
+
+.iconfont {
+  font-family:"iconfont" !important;
+  font-size:16px;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+}
+
+.iconfont {
+  font-family:"iconfont" !important;
+  font-size:16px;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-iconset0204:before { content: "\e667"; }
+
+.icon-banshou:before { content: "\e659"; }
+
+.icon-icon-test:before { content: "\e657"; }
+
+.icon-anquanmao:before { content: "\e610"; }
+
+.icon-banshou_Line:before { content: "\e64e"; }
+
+.icon-anquanmao1:before { content: "\e60f"; }
+
+.icon-anquanmao2:before { content: "\e621"; }
+

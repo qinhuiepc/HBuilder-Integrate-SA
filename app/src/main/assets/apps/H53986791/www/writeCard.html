@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    <title></title>
+    <script src="./js/mui.min.js"></script>
+    <link href="./css/mui.min.css"/>
+    <style>
+			html{
+				font-size: calc(100vw / 3.75);
+			}
+	</style>
+</head>
+<body>
+    <p>
+        项目：
+        <input type="text" id="project">
+    </p>
+    <p>
+        线号：
+        <input type="text" id="lineNumber">
+    </p>
+    <p>
+        单管号：
+        <input type="text" id="singleNumber">
+    </p>
+    <button onclick="scan()">扫码</button>
+    <button onclick="done()">写入</button>
+<script>
+    var projectNode = document.getElementById("#project");
+    var lineNode = document.getElementById("#lineNumber");
+    var singleNode = document.getElementById("#singleNumber");
+    function (){
+        if(projectNode.length == 0){
+            mui.toast("请填写项目");
+        }else if(lineNode.length == 0){
+            mui.toast("请填写线号");
+        }else if(singleNode.length == 0){
+            mui.toast("请填写单管号");
+        }else{
+            plus.android.invoke(serviceObj,"writeArea",3,2,2,"00000000",[2,2,2,2]); //写卡
+            var dataObj = plus.android.implements("com.speedata.libuhf.interfaces.OnSpdWriteListener",{
+                "getWriteData":function(val){
+                    alert("写入成功："+plus.android.invoke(val,"getEPCData"));
+                }
+            })
+            plus.android.invoke(serviceObj,"setOnWriteListener",dataObj); //写数据监听
+        }
+    }
+</script>
+</body>
+</html>

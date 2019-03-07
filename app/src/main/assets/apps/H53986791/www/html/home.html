@@ -1,0 +1,236 @@
+<!DOCTYPE HTML>
+<html ng-app="LiuHua">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../iconFont/iconfont.css" />
+		<link rel="stylesheet" href="../css/icons-extra.css" />
+		<link rel="stylesheet" href="../css/mui.min.css"/>
+		<link rel="stylesheet" href="../css/mui.css" />
+		<link rel="stylesheet" href="../css/mui.picker.min.css" />
+		<link rel="stylesheet" href="../css/common.css" />
+		<link rel="stylesheet" href="../css/border.css"  />
+		<script type="text/javascript" src="../epc-static/js/config.js"></script>
+		<script type="text/javascript" src="../js/echarts.js"></script>
+		<!--<script type="text/javascript" src="../epc-static/js/ydui.flexible.js"></script>-->
+		<script type="text/javascript" src="../epc-static/js/epcTool.js"></script>
+		<script type="text/javascript" src="../js/jquery.js"></script>
+		<script type="text/javascript" src="../epc-static/js/md5.js"></script>
+		<script type="text/javascript" src="../epc-static/js/ydui.js"></script>
+		<script type="text/javascript" src="../epc-static/js/epcUtil.js"></script>
+		<script type="text/javascript" src="../epc-static/js/immersed.js"></script>
+		<script type="text/javascript" src="../js/angular.js"></script>
+		<script type="text/javascript" src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/mui.picker.min.js"></script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript" src="../js/index.js"></script>
+		<script type="text/javascript" src="../js/immersed.js"></script>
+		<script type="text/javascript" src="../js/config.js"></script>
+		<style type="text/css" media="screen">
+			#header {
+				background: #fff;
+				font-weight: 600;
+				font-size: 20px;
+			}
+			
+			.nvtt {
+				color: #1a83d1;
+				text-align: center;
+				line-height: 3rem;
+			}
+			
+			.mui-grid-view.mui-grid-9#top_bar {
+				border: none;
+				background: #1a83d1;
+			}
+			
+			.mui-grid-view.mui-grid-9 .mui-table-view-cell {
+				border: none;
+			}
+			
+			#top_bar.mui-grid-view.mui-grid-9 .mui-table-view-cell.mui-active {
+				background: #14629d;
+			}
+			
+			#top_bar .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+				color: #fff;
+			}
+			
+			.hdata {
+				color: #e1673e;
+				font-size: 14px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			
+			/*#top_bar {
+				/*margin-bottom: 20px;
+			}*/
+			
+			#top_bar li a span,
+			#top_bar li a div {
+				color: #fff;
+			}
+			
+			#top_bar li:hover {
+				background: #1a83d1;
+			}
+			#box li{
+				width: 33.3%;
+				float: left;
+			}
+			#popover {
+				width: 60%;
+				left: 20%;
+				top: 30%;
+			}
+			.daiban {
+				position: relative;
+			}
+			.badge {
+				position: absolute;
+				top: 2px;
+				right: 0;
+				background: red;
+			}
+			.gray { 
+			    -webkit-filter: grayscale(100%);
+			    -moz-filter: grayscale(100%);
+			    -ms-filter: grayscale(100%);
+			    -o-filter: grayscale(100%);
+			    filter: grayscale(100%);
+			    filter: gray;
+			}
+		</style>
+	</head>
+	<body ng-controller="MyHome">
+		<header id="header" class="mui-bar-nav">
+			<div class="nvbt"></div>
+			<div class="nvtt">iMobile</div>
+			<div class="nvbt"></div>
+		</header>
+		<div id="dcontent" class="dcontent">
+			<ul id="top_bar" class="mui-table-view mui-grid-view mui-grid-9">
+				<li ng-repeat = "(index,item) in headItems" ng-click = "go(item.template,item.authority)" class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 mui-pull-center">
+					<a>
+						<img class="daiban" ng-src="{{item.imgSrc}}">
+						<div class="mui-media-body">
+							<span ng-show="index==2?true:false" class="badge mui-badge mui-badge-danger" id="records" ng-model="dataNumber">{{dataNumber}}</span>
+							{{item.title}}
+						</div>
+					</a>
+				</li>
+			</ul>
+			<ul style="background: #fff;" id="box" class="mui-table-view mui-grid-view mui-grid-9">
+				<li ng-repeat = "item in datas" ng-click = "go(item.template,item.authority)" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a>
+						<img ng-class="item.authority == false?'gray':''" ng-src="{{item.imgSrc}}">
+						<div class="mui-media-body">{{item.title}}</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div id="popover" class="mui-popover">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a onclick="takePhoto()" class="take_photo_li" href="#">拍照</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a onclick="appendByGallery()" href="#">从相册选择</a>
+				</li>
+			</ul>
+		</div>
+		<script>
+			angular.module('LiuHua',[])
+			.controller('MyHome',function($scope){
+				$scope.dataNumber = "";
+				localStorage.setItem('themeColor', '#1E9FFF');
+				mui.plusReady(function(){
+					plus.webview.currentWebview().setStyle({'popGesture':'close'});
+					var xhrProfile = new plus.net.XMLHttpRequest();
+					xhrProfile.onreadystatechange = function(){
+						switch(xhrProfile.readyState){
+							case 4:
+							if(xhrProfile.status == 200){
+								$scope.$apply(function(){
+									$scope.headItems = JSON.parse(xhrProfile.responseText).top;
+									$scope.datas = JSON.parse(xhrProfile.responseText).central;
+								});
+							}
+						}
+					}
+					xhrProfile.open("GET",window.imobile.root+"/profile.json",false);
+					xhrProfile.send(null);
+				})
+				$scope.go = function(schem,authority){
+					if(authority !== true){
+						return mui.toast("您没有权限访问该模块~");
+					}
+					var index = schem.lastIndexOf("/");
+					var datas = schem.substring(index+1);
+					if(datas.indexOf("data-list") > -1){
+						epcTool.clicked(schem,epcTool.random(true),'我的待办',{type:'task'},true);
+					}else{
+						mui.openWindow({
+							url:encodeURI(schem),
+							id:'barcode_scan.html',
+							extras:{
+								accessToken:localStorage.getItem("accessToken"),
+								usernameCn:localStorage.getItem("userNameCn"),
+								authority:localStorage.getItem("authority"),
+								ip:localStorage.getItem("ipName"),
+								refresh:localStorage.getItem("refreshToken"),
+								expires:localStorage.getItem("expiresIn")
+							}
+						})
+					}
+				}
+				mui.init({
+					keyEventBind: {
+						backbutton: true
+					}
+				});
+				mui.ajax(epc.root + '/extension/extensionAction.action', {
+					data: {
+						extensionid: 'com.epc.epcfoundation.extensions.ui.grid',
+						async: false,
+						functionpointid: 'com.epc.epcfoundation.base.tasklist',
+						functionid_settitle: 'com.epc.epcfoundation.extension.ui.tabpanel_settitle',
+						functiongroupid: '402880b13c7fb7a6013c8074eacc0018',
+						_projectid: -1,
+						_search: false,
+						rows: 1,
+						page: 1,
+					},
+					type: 'post', //HTTP请求类型
+					dataType: 'html',
+					headers: {
+						'Authorization': localStorage.getItem('accessToken'),
+					},
+					success: function(data) {
+						var json = $(data).find('#jsondata').text();
+						try {
+							json = eval("(" + json + ")");
+						} catch (e) {
+							return false;
+						}
+						var records = json.datastr.records;
+						if (records != 0) {
+//							$('#records').html(records).show();
+							$scope.$apply(function(){
+								$scope.dataNumber = records;
+							})
+						}else{
+							$('#records').html('0');
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						console.log(errorThrown);
+					}
+				});
+			})
+		</script>
+	</body>
+</html>

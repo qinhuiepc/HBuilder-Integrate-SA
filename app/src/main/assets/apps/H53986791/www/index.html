@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<script src="./js/mui.min.js"></script>
+	<link href="./css/mui.min.css"/>
+	<style>
+	        html{
+	            font-size: calc(100vw / 3.75);
+	        }
+	        body{
+	            position:relative;
+	        }
+	        .banner{
+	        	height:100%;
+	        }
+    		.btn{
+    			border-radius: 8px;
+    			font-size: 24px;
+    			background-color: #0090CE;
+    			color: #ffffff;
+    			display:block;
+    			width: 50%;
+				padding: 10px 0 10px;
+				outline: none;
+    			text-align: center;
+    			margin: 0 auto;
+    			margin-top: 15%;
+    		}
+    		.box{
+    			border: 1px solid #cccccc;
+    		    display:none;
+    		    width:2.4rem;
+    		    height:3rem;
+    		    position:absolute;
+    		    top:50%;
+    		    left:50%;
+    		    margin-left:-1.2rem;
+    		    margin-top:-1.5rem;
+    		    border-radius:10px;
+    		    background-color: #0090CE;
+    		}
+    		.writeCard{
+    			background-color: #0090CE;
+    			padding-left:0.1rem;
+    			border: 1px solid #cccccc;
+    		    display:none;
+    		    width:2.4rem;
+    		    height:3rem;
+    		    position:absolute;
+    		    top:50%;
+    		    left:50%;
+    		    margin-left:-1.2rem;
+    		    margin-top:-1.5rem;
+    		    border-radius:10px;
+    		}
+    		.writeCard p{
+    			width:95%;
+    			height:15%;
+    			font-size:0.2rem;
+    			position:relative;
+    		}
+    		.writeCard input{
+    			position: absolute;
+				width: 1.5rem;
+				height: 0.25rem;
+				right: 0;
+				top: 0;
+    		}
+    		.btnNode{
+    			margin-top:0.1rem;
+    			height:25%;
+    			position:relative;
+    		}
+    		.btnNode button{
+    			position:absolute;
+    			display:inline-block;
+    			width:30%;
+    			height:50%;
+    			top:0.1rem;
+    		}
+    		.btn1{
+    			left:5%;
+    		}
+    		.btn2{
+    			right:5%;
+    		}
+    	</style>
+</head>
+<body>
+<div class="banner">
+	<button class="btn" onclick="Inventory()">盘点</button>
+	<button class="btn" onclick="readCard()">读卡</button>
+	<button class="btn" onclick="writeCard()">写卡</button>
+	<button class="btn" onclick="printCard()">打印</button>
+	<button class="btn" onclick="upload()">扫码1</button>
+</div>
+<div class="box">
+	<textarea id="area" style="display:block;height:80%;width:90%;margin:0.1rem auto;" placeholder="请进行手机上的扫码功能~"></textarea>
+	<button onclick="closeCard()" style="display:block;width:50%;fontSize:0.2rem;margin:0 auto;">关闭</button>
+</div>
+<div class="writeCard">
+	<p>
+		项目：
+		<input type="text" id="project">
+	</p>
+	<p>
+		线号：
+		<input type="text" id="lineNumber">
+	</p>
+	<p>
+		单管号：
+		<input type="text" id="singleNumber">
+	</p>
+	<div class="btnNode">
+		<button class="btn1" onclick="scanq()">扫码1</button>
+		<button class="btn2" onclick="done()">写入</button>
+	</div>
+</div>
+<script>
+			var activity;
+			var UHFService;
+			var UHFServiceObj;
+			var serviceObj;
+			var scanObj;
+			var arr = [];
+			var scanService;
+			var dataArr = [];
+			var valStr;
+			mui.plusReady(function(){
+				activity = plus.android.runtimeMainActivity();
+				UHFService = plus.android.importClass("com.epc.uhf.UHFService");
+				UHFServiceObj = new UHFService();
+				serviceObj  = UHFServiceObj.getService(activity); // 数据对象
+				scanObj = plus.android.importClass("com.scandecode.inf.ScanInterface");
+				scanService = new scanObj(); // 实例化扫描对象
+				plus.android.invoke(scanService,"initService","false"); // 初始扫描服务
+			});
+			function Inventory(){
+				plus.android.invoke(serviceObj,"openDev"); // 设备上电
+                var dataObj = plus.android.implements("com.speedata.libuhf.interfaces.OnSpdInventoryListener",{
+                    "getInventoryData":function(val){
+                    	//if(arr.join("").indexOf(plus.android.invoke(val,"getEpc")) == -1){
+                    	//	arr.push(plus.android.invoke(val,"getEpc"));
+                    	//}
+                    	plus.android.invoke(serviceObj,"inventoryStop");  // 停止盘点
+                    	valStr = plus.android.invoke(val,"getEpc");
+                    	alert("user数据："+plus.android.invoke(val,"getTid"));
+                    }
+                });
+                plus.android.invoke(serviceObj,"setOnInventoryListener",dataObj); //盘点数据监听
+                plus.android.invoke(serviceObj,"inventoryStart"); // 开始盘点
+			}
+			function readCard(){
+			//qinhui  读卡方法示例 // 参数1: int;  0:status 读取状态，成功与否 ;1= byte[] EPCData 目标卡片EPC;2=byte[] ReadData 读到的数据;3=int EPCLen EPC长度;4=int DataLen 读到的数据长度;5=int RSS 信号强度
+			//参数2： 16 按16进制数据读取
+				var dataObj1 = plus.android.invoke(UHFServiceObj,"getCarData",1,16); // 选卡
+				alert(dataObj1);
+            }
+            function writeCard(){
+            //qinhui 写卡方法示例 参数1: 要写入卡片的数据 参数2： 16 按16进制数据写入
+            	var dataObj2 = plus.android.invoke(UHFServiceObj,"WriteCar","1 1 1 ",16);
+            	alert(dataObj2);
+            	//document.querySelector(".writeCard").style.display = "block";
+            	//document.querySelector(".banner").style.opacity = 0.1;
+				//plus.android.invoke(serviceObj,"setAntennaPower",8); //设置天线功率
+				//plus.android.invoke(serviceObj,"getAntennaPower"); //读取当前天线功率值
+				//plus.android.invoke(serviceObj,"setFreqRegion",1); //设置频率区域
+				//plus.android.invoke(serviceObj,"getFreqRegion"); //获取当前频率区域
+				//plus.android.invoke(serviceObj,"setPassword",1,"00000000","11111111"); //设置密码
+				//plus.android.invoke(serviceObj,"setLock",1,2,"11111111"); //锁卡
+				//plus.android.invoke(serviceObj,"setInvMode",0,2,"11111111"); //设置盘点模式
+				//plus.android.invoek(serviceObj,"getInvMode",1); //获取盘点模式信息
+            }
+            function printCard(){
+				alert("你想打印什么?");
+            }
+            function upload(){
+           		alert("Test：qinhui0");
+				plus.android.invoke(UHFServiceObj,"scanOne");
+				alert("Test：qinhui");
+               // document.querySelector(".box").style.display = "block";
+               // document.querySelector(".banner").style.opacity = 0.1;
+               // document.querySelector("#area").focus();
+            }
+            function closeCard(){
+            	document.querySelector(".box").style.display = "none";
+            	document.querySelector(".banner").style.opacity = 1;
+            }
+            function done(){
+            	var projectNode = document.getElementById("project").value;
+				var lineNode = document.getElementById("lineNumber").value;
+				var singleNode = document.getElementById("singleNumber").value;
+				var projectArr = projectNode.split("");
+				var lineArr = lineNode.split("");
+				var singleArr = singleNode.split("");
+				if(projectNode.length == 0){
+					mui.toast("请填写项目");
+				}else if(lineNode.length == 0){
+					mui.toast("请填写线号");
+				}else if(singleNode.length == 0){
+					mui.toast("请填写单管号");
+				}else{
+					for(var i =0;i<projectArr.length;i++){
+						projectArr[i] = projectArr[i].charCodeAt();
+					}
+					projectArr.push(32);
+					for(var k =0;k<lineArr.length;k++){
+						lineArr[k] = lineArr[k].charCodeAt();
+					}
+					lineArr.push(32);
+					for(var j =0;j<singleArr.length;j++){
+						singleArr[j] = singleArr[j].charCodeAt();
+					}
+					singleArr.push(32);
+					var messageArr = projectArr.concat(lineArr).concat(singleArr);
+					alert(messageArr);
+					var dataObj = plus.android.implements("com.speedata.libuhf.interfaces.OnSpdWriteListener",{
+						"getWriteData":function(val){
+							alert("写入成功："+plus.android.invoke(val,"getEPCData"));
+							document.querySelector(".writeCard").style.display = "none";
+							document.querySelector(".banner").style.opacity = 1;
+						}
+					})
+					dataObj2 = plus.android.invoke(UHFServiceObj,"WriteCar",messageArr)
+					//plus.android.invoke(serviceObj,"setOnWriteListener",dataObj); //写数据监听
+					//plus.android.invoke(serviceObj,"writeArea",3,0,22,"00000000",messageArr); //写卡
+				}
+            }
+            function scanq(){
+            	alert("Test：qinhui0");
+				plus.android.invoke(UHFServiceObj,"scanOne");
+				alert("Test：qinhui");
+            }
+		</script>
+</body>
+</html>

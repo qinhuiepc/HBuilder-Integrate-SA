@@ -1,0 +1,31 @@
+CACHE MANIFEST
+# 2018-11-28 v1.0.0
+./index.html
+./js/angualr.js
+./js/common.js
+./js/immersed.js
+./js/index.js
+./js/jquery.js
+./js/mui.js
+./js/mui.min.js
+./js/mui.picker.min.js
+./js/mui.previewimage.js
+./js/mui.pullrefresh.js
+./js/mui.zoom.js
+./js/utitls.js
+./css/app.css
+./css/border.css
+./css/circle.css
+./css/common.css
+./css/feedback-page.css
+./css/font-awesome.min.css
+./css/iconfont.css
+./css/icons-extra.css
+./css/mui.css
+./css/mui.min.css
+./css/mui.picker.css
+./css/yulan.css
+NETWORK:
+*
+FALLBACK:
+./offline.html

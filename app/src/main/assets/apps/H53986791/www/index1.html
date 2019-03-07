@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html ng-app="LiuHua" manifest="manifest.appcache">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<script type="text/javascript" src="./js/angular.js"></script>
+    <script type="text/javascript" src="./js/mui.min.js"></script>
+    <script type="text/javascript" src="./js/config.js"></script>
+    <link href="./css/mui.min.css" rel="stylesheet"/>
+    <style>
+    		html{
+    			height: 100%;
+    		}
+			body{
+				background: url('./img/bj.png') no-repeat;
+				background-size: cover;
+				height: 100%;
+			}
+			.imgs{
+				margin-top: 0;
+				width: 100%;
+				height: 4.4rem;
+			}
+			.logo{
+				width: 2.7rem;
+				position: relative;
+				top: 1.7rem;
+				left: 50%;
+				margin-left: -1.35rem;
+			}
+			.user,.pass{
+				width: 5.6rem;
+				height: 0.8rem;
+				background: url('./img/userBorder.png');
+				background-size: cover;
+				margin: 0 auto;
+				position: relative;
+			}
+			.user{
+				margin-top: 1rem;
+			}
+			.pass{
+				margin-top: 0.4rem;
+			}
+			.icon{
+				width: 0.3rem;
+				position: absolute;
+				left: 0.34rem;
+				top: 0.2rem;
+			}
+			.icon1{
+				height: 0.32rem;
+			}
+			.icon2{
+				height: 0.38rem;
+			}
+			input{
+				position: absolute;
+				width: 4.6rem !important;
+				height: 0.48rem !important;
+				left: 0.64rem;
+				top: 0.16rem;
+				border: none !important;
+				outline:none !important;
+				background-color: transparent !important;
+			}
+			input::-webkit-input-placeholder{
+				color: #FFFFFFFF;
+				font-family: MicrosoftYaHei;
+				font-size: 0.36rem;
+				line-height: 0.48rem;
+			}
+			.login{
+				width: 5.6rem;
+				height: 0.8rem;
+				position: relative;
+				margin-top: 1.12rem;
+				left: 50%;
+				margin-left: -2.8rem;
+			}
+		</style>
+
+    <script type="text/javascript" charset="utf-8">
+    	document.documentElement.style.fontSize = document.documentElement.clientWidth / 720*100 + 'px';
+	</script>
+</head>
+<body ng-controller="MyLogin">
+	<div class="imgs">
+		<img class="logo" src="./img/logo.png" />
+	</div>
+	<div class="user">
+		<img class="icon1 icon" src="./img/username.png" />
+		<input type="text" ng-model="username" placeholder="用户名" />
+	</div>
+	<div class="pass">
+		<img class="icon2 icon" src="./img/password.png" />
+		<input type="password" ng-model="pass" placeholder="密码" />
+	</div>
+	
+	<div class="pass">
+		<img class="icon2 icon" src="./img/ip.png">
+		<input type="text" class="" placeholder="请输入IP地址" ng-model="ipname"/>
+	</div>
+	<img class="login" ng-click="login()" src="./img/button.png" />
+	<script>
+		angular.module('LiuHua',[])
+		.controller("MyLogin",function($scope){
+			mui.plusReady(function(){
+				var activity = plus.android.runtimeMainActivity();
+				var UHFService = plus.android.importClass("com.epc.uhf.UHFService");
+				var UHFServiceObj = new UHFService();
+				var serviceObj  = UHFServiceObj.getService(activity);
+				//=====================盘点
+				//plus.android.invoke(serviceObj,"openDev"); // 设备上电 0
+				//plus.android.invoke(serviceObj,"inventoryStart"); // 开始盘点
+				//var dataObj = plus.android.implements("com.speedata.libuhf.interfaces.",{
+				//	"getInventoryData":function(val){
+				//		alert('1111==========='+plus.android.invoke(val,"getEpc"));
+				//	}
+				//});
+				//plus.android.invoke(serviceObj,"setOnInventoryListener",dataObj);
+				//plus.android.invoke(serviceObj,"inventoryStop"); // 停止盘点
+				//=====================读卡
+				//plus.android.invoke(serviceObj,"readArea",[1,2,6,"00000000"]);
+				var messages = plus.android.implements("com.speedata.libuhf.interfaces.OnSpdReadListener",{
+					"getReadData":function(data){
+						alert('2222===========');
+					}
+				})
+				alert(messages);
+				alert(plus.android.invoke(serviceObj,"selectCard",[1,2,true]));
+				plus.android.invoke(serviceObj,"setOnReadListener",messages);
+				//var pw = new ser(ser.PowerType.MAIN, 94);
+				//var stt = plus.android.runtimeMainActivity();
+				//var mContext = stt.getApplicationContext();
+				//alert("mContext======"+mContext);
+				//var dlg = plus.android.importClass("com.speedata.libuhf.UHFManager");
+				//var sss = dlg.getUHFService(stt.this);
+				//alert("sss==="+sss);
+				//var fac = plus.android.importClass("com.speedata.libuhf.utils.SharedXmlUtil");
+				//var fas = fac.getInstance(mContext).read("modle", "");
+				//alert("fas=="+fas);
+				//var version = plus.android.importClass("android.os.Build");
+				//var vers = version.MODEL;
+				//alert("vers===="+vers);
+				//var facl = plus.android.importClass("com.speedata.libuhf.utils.ConfigUtils");
+				//var fasl = facl.readConfig(mContext).getUhf().getModule();
+				//alert("fas1==="+fasl);
+				//var ser = plus.android.importClass("android.serialport.DeviceControlSpd");
+				//alert("ser====="+ser);
+				//var pw = new ser(ser.PowerType.MAIN, 94);
+				//alert("pw==========="+pw);
+				//pw.PowerOnDevice();
+				//var power = powerOn(ser.PowerType.MAIN, 94);
+				//alert("power======"+power);
+				//var str = new dlg();
+				//var sss = str.getUHFService(stt.this);
+				//var sss = plus.android.invoke(str,"getUHFService",stt.this);
+				//var dlgd = plus.android.newObject("com.speedata.libuhf.UHFManager");
+				//var str = plus.android.invoke(dlgd,"getUHFService",stt.this);
+				//alert(str);
+			})
+			/*var clientId;
+			var u = navigator.userAgent;
+			if(u.indexOf("iPhone") > -1){
+				var t1 = window.setInterval(function(){
+					clientId = plus.push.getClientInfo().clientid;
+					if(clientId){
+						window.clearInterval(t1);
+						openHome();
+					}
+				},50);
+			}else{
+				mui.plusReady(function(){
+					clientId = plus.push.getClientInfo().clientid;
+				})
+			}
+			function openHome(){
+				if($scope.username.length == 0){
+					mui.toast("请输入用户名");
+				}else if($scope.pass.length == 0){
+					mui.toast("请输入密码");
+				}else if($scope.ipname.length == 0){
+					mui.toast("请输入ip地址");
+				}else{
+					localStorage.setItem("ipName",$scope.ipname);
+					mui.plusReady(function(){
+						var wt = plus.nativeUI.showWaiting();
+						var xhr = new plus.net.XMLHttpRequest();
+						xhr.onreadystatechange = function(){
+							switch ( xhr.readyState ) {
+								case 4:
+								if ( xhr.status == 200 ) {
+									var accessToken = JSON.parse(xhr.responseText).access_token;
+									var refreshToken = JSON.parse(xhr.responseText).refresh_token;
+									localStorage.setItem("refreshToken",refreshToken);
+									var value = "Bearer "+accessToken;
+									var expiresIn = JSON.parse(xhr.responseText).expires_in;
+									localStorage.setItem("expiresIn",expiresIn);
+									localStorage.setItem("userName",$scope.username);
+									localStorage.setItem("passWord",$scope.pass);
+									localStorage.setItem("accessToken",value);
+									var newXhr = new plus.net.XMLHttpRequest();
+									newXhr.onreadystatechange = function(){
+										switch(newXhr.readyState){
+											case 4:
+											if(newXhr.status == 200){
+												var xhrClient = new plus.net.XMLHttpRequest();
+												xhrClient.onreadystatechange = function(){
+													switch(xhrClient.readyState){
+														case 4:
+														if(xhrClient.status == 200){
+															var userNameCnNode = JSON.parse(newXhr.responseText).userNameCn;
+															var authorityNode = JSON.parse(newXhr.responseText).authorities[0].authority;
+															localStorage.setItem("scan","");
+															localStorage.setItem("userNameCn",userNameCnNode);
+															localStorage.setItem("authority",authorityNode);
+															mui.toast("登录成功~");
+															mui.openWindow({
+																url:'html/home.html',
+																id:'home.html'
+															});
+															wt.close();
+														}
+													}
+												}
+												xhrClient.open("GET",$scope.ipname+"/setClientId/"+$scope.username+"/"+clientId,false);
+												xhrClient.send(null);
+											}
+										}
+									}
+									newXhr.open("GET",$scope.ipname+"/sso/user",false);
+//									newXhr.open("GET","http://192.168.0.2:8888/sso/user",false);
+	//								newXhr.open("GET","http://10.192.24.90:80/sso/user",false);
+									newXhr.setRequestHeader("Authorization",value);
+									newXhr.send(null);
+								} else {
+									mui.toast("请输入正确的用户名和密码");
+									wt.close();
+								}
+								break;
+							}
+						}
+						xhr.open("POST",$scope.ipname+"/sso/oauth/token",false);
+//						xhr.open("POST","http://192.168.0.2:8888/sso/oauth/token",false);
+	//					xhr.open("POST","http://10.192.24.90:80/sso/oauth/token",false);
+						xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+						xhr.setRequestHeader("Authorization","Basic aW1vYmlsZTppbW9iaWxlc2VjcmV0");
+						var datas = 'grant_type=password&scope=imobile&client_id=imobile&username='+$scope.username+'&password='+$scope.pass;
+						xhr.send(datas);
+					})
+				}
+			}
+			var userName = localStorage.getItem('userName');
+			var passWord = localStorage.getItem('passWord');
+			var ipName = localStorage.getItem('ipName');
+			$scope.$watch('$viewContentLoaded',function(){
+				if(userName != null && passWord != null && ipName != null){
+					$scope.username = userName;
+					$scope.pass = passWord;
+					$scope.ipname = ipName;
+					openHome();
+				}else{
+					$scope.username = "";
+					$scope.pass = "";
+					$scope.ipname = "http://10.192.24.92:80";
+//					$scope.ipname = "http://124.42.16.82:9081";
+				}
+			})
+			$scope.login = function(){
+				openHome();
+			};*/
+		})
+	</script>
+</body>
+</html>
